@@ -1,0 +1,21 @@
+{
+"manifest_version": 3,
+"version": "1.0.0",
+"name": "List all Links",
+"description": "List and search all text links, javascript, css, and image sources",
+
+"browser_specific_settings": {
+	"gecko": {
+		"id": "listAllLinks@cubeleco"
+	}
+},
+"background": {
+	"scripts": ["background.js"]
+},
+
+"icons": {
+	"128": "icon.png"
+},
+
+"permissions": ["activeTab", "tabs", "scripting", "menus", "storage"]
+}

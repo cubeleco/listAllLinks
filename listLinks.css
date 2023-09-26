@@ -1,0 +1,95 @@
+@media (prefers-color-scheme: light) {
+	html, body {
+		color: black;
+		background-color: white;
+	}
+	button, input, select, textarea, table td {
+		border: 2px solid #b4b4b4;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	html, body {
+		color: white;
+		background-color: black;
+	}
+	button, input, select, textarea {
+		color: white;
+		background-color: #202020;
+		caret-color: white;
+		border: 2px solid #545454;
+	}
+	button:hover:not(.saved) {
+		background-color: #404040;
+	}
+	table td {
+		border: 2px solid #545454;
+		/*border: 2px outset #545454;*/
+	}
+	::selection {
+		color: black;
+		background-color: #4cf;
+	}
+	input:disabled {
+		color: #999;
+		background-color: #333;
+		border: 2px inset #454;
+	}
+}
+
+html, body {
+	font-size: 1rem;
+}
+body {
+	margin: 0.6em 1.0em;
+	padding: 0;
+}
+
+h4 {
+	margin: 0;
+}
+table {
+	border-collapse: collapse;
+}
+table td {
+	padding: 0 0.5em;
+}
+input[type="search"] {
+	width: 20em;
+}
+button, label, input[type="checkbox"] {
+	cursor: pointer;
+}
+label, #Toc {
+	user-select: none;
+}
+
+summary[title] {
+	cursor: help;
+}
+
+.stick {
+	position: sticky;
+	top: 1em;
+}
+.category {
+	margin-bottom: 1.2em;
+}
+.linkList {
+	margin-left: 1em;
+	display: grid;
+}
+.emptyList {
+	color: #808080;
+}
+.saved {
+	background-color: #080;
+	border-color: #040;
+}
+.hidden {
+	display: none;
+}
+.floatRight {
+	float: right;
+	right: 1.2em;
+}

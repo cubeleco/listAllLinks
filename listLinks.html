@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Loading Links</title>
+	<link rel="stylesheet" type="text/css" href="listLinks.css">
+	<link rel="icon" href="icon.png">
+</head>
+<body>
+	<div class="category">
+		<h4>Page URL</h4>
+		<a id="url"></a>
+	</div>
+	<button id="saveView" class="floatRight">Save View</button>
+
+	<div id="search">
+		<input id="searchBar" type="search" placeholder="Search"/>
+		<input id="invertSearch" type="checkbox"/>
+		<label for="invertSearch">Invert</label>
+		<input id="ignoreCase" type="checkbox"/>
+		<label for="ignoreCase">Ignore Case</label>
+		<input id="firstPartySearch" type="checkbox"/>
+		<label for="firstPartySearch">First Party</label>
+	</div>
+	<div id="Toc" class="stick floatRight">
+		<button id="expandAll">Expand All</button>
+		<button id="collapseAll">Collapse All</button>
+		<details class="linkList hidden">
+			<summary>Jump to</summary>
+			<a href="#linksTable">Text Links</a>
+			<a href="#stylesheet">Style Sheets</a>
+			<a href="#script">Scripts</a>
+			<a href="#image">Images</a>
+			<a href="#audio">Audio</a>
+			<a href="#video">Videos</a>
+			<a href="#iframe">IFrames</a>
+			<a href="#misc">Miscellaneous</a>
+		</details>
+	</div>
+
+	<details>
+		<summary>Text Links (<span class="listLength"></span>)</summary>
+		<table id="linksTable">
+			<thead>
+				<tr>
+					<td>Text</td>
+					<td>Link</td>
+				</tr>
+			</thead>
+			<tbody id="textLinks"></tbody>
+		</table>
+	</details>
+
+	<details>
+		<summary>Style Sheets (<span class="listLength"></span>)</summary>
+		<div id="stylesheet" class="linkList"></div>
+	</details>
+	<details>
+		<summary>Scripts (<span class="listLength"></span>)</summary>
+		<div id="script" class="linkList"></div>
+	</details>
+
+	<details>
+		<summary>Images (<span class="listLength"></span>)</summary>
+		<div id="image" class="linkList"></div>
+	</details>
+	<details>
+		<summary>Audio (<span class="listLength"></span>)</summary>
+		<div id="audio" class="linkList"></div>
+	</details>
+	<details>
+		<summary>Videos (<span class="listLength"></span>)</summary>
+		<div id="video" class="linkList"></div>
+	</details>
+	<details>
+		<summary>IFrames (<span class="listLength"></span>)</summary>
+		<div id="iframe" class="linkList"></div>
+	</details>
+	<details>
+		<summary title="Metadata links, Fav icons, Alternate language versions, Opensearch, RSS, Appstore links">Miscellaneous (<span class="listLength"></span>)</summary>
+		<div id="misc" class="linkList"></div>
+	</details>
+
+	<script type="text/javascript" src="listLinks.js"></script>
+</body>
+</html>
