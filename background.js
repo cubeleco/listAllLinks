@@ -49,5 +49,5 @@ start();
 //event listeners for context menu items
 menuApi.onClicked.addListener(itemClicked);
 //listen for loaded link pages
-browser.runtime.onMessage.addListener(linkResponse);
+chrome.runtime.onMessage.addListener(linkResponse);
 
