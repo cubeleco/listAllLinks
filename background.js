@@ -1,5 +1,7 @@
 //links objects indexed by tabid
 var linksArr = [];
+//alias for which context menu api is available
+var menuApi = chrome.contextMenus || browser.menus;
 
 function linkResponse(message, sender, responseFunc) {
 	if(message === 'getLinks') {
@@ -34,17 +36,18 @@ function itemClicked(item, tab) {
 
 function start() {
 	//create context menus
-	chrome.menus.create({
+	menuApi.create({
 		id: 'grabLinks',
 		title: 'List all Links',
 		type: 'normal',
-		contexts: ['page', 'tab']
+		contexts: ['page']
+		//contexts: ['page', 'tab']
 	});
 }
 start();
 
 //event listeners for context menu items
-chrome.menus.onClicked.addListener(itemClicked);
+menuApi.onClicked.addListener(itemClicked);
 //listen for loaded link pages
-chrome.runtime.onMessage.addListener(linkResponse);
+browser.runtime.onMessage.addListener(linkResponse);
 

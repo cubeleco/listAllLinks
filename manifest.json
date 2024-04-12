@@ -1,6 +1,6 @@
 {
 "manifest_version": 3,
-"version": "1.0.0",
+"version": "1.0.1",
 "name": "List all Links",
 "description": "List and search all text links, javascript, css, and image sources",
 
@@ -10,6 +10,7 @@
 	}
 },
 "background": {
+	"service_worker": "background.js",
 	"scripts": ["background.js"]
 },
 
@@ -17,5 +18,5 @@
 	"128": "icon.png"
 },
 
-"permissions": ["activeTab", "tabs", "scripting", "menus", "storage"]
+"permissions": ["activeTab", "tabs", "scripting", "contextMenus", "menus", "storage"]
 }
