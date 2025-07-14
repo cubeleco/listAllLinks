@@ -1,13 +1,15 @@
 {
 "manifest_version": 3,
-"version": "1.0.2",
+"version": "1.1.0",
 "name": "List all Links",
-"description": "List and search all text links, javascript, css, and image sources",
+"description": "List and search all text links, images, javascript, and stylesheet sources",
 
 "browser_specific_settings": {
 	"gecko": {
 		"id": "listAllLinks@cubeleco"
 	}
+},
+"action": {
 },
 "background": {
 	"service_worker": "background.js",
@@ -18,5 +20,5 @@
 	"128": "icon.png"
 },
 
-"permissions": ["activeTab", "scripting", "contextMenus", "menus", "storage"]
+"permissions": ["activeTab", "scripting", "contextMenus", "menus", "clipboardWrite", "bookmarks", "storage"]
 }

@@ -7,11 +7,38 @@
 	<link rel="icon" href="icon.png">
 </head>
 <body>
+	<span id="statusMessage" class="stick floatRight hidden"></span>
 	<div class="category">
 		<h4>Page URL</h4>
 		<a id="url"></a>
 	</div>
-	<button id="saveView" class="floatRight">Save View</button>
+
+	<details id="saveLinks" class="category listIndent">
+		<summary>Copy/Save Links</summary>
+		<button id="copyButton" class="spacerTop spacer">Copy links</button>
+		<button id="plainTextButton">Plain text</button>
+		<button id="bookmarkButton">Bookmark links</button>
+		<br>
+
+		<input id="ignoreCollapsed" type="checkbox"/>
+		<label for="ignoreCollapsed" title="Categories that are not open will also be copied/saved.">Include collapsed categories</label>
+		<br>
+		<input id="categorySpacer" type="checkbox"/>
+		<label for="categorySpacer">Add category labels</label>
+		<br>
+		<input id="prependTextLinks" type="checkbox" class="spacer"/>
+		<label for="prependTextLinks">Add link text</label>
+		<br>
+		<label for="bookmarkFolders">Bookmarks Destination</label>
+		<br>
+		<select id="bookmarkFolders" class="spacer"></select>
+		<br>
+		<label for="bookmarkTitle">Bookmarks Folder Name</label>
+		<br>
+		<input id="bookmarkTitle" type="text"/>
+	</details>
+
+	<button id="saveView" class="floatRight" title="Saves which options are selected, which categories are expanded/collapsed, and the current search as the default view.">Save View</button>
 
 	<div id="search">
 		<input id="searchBar" type="search" placeholder="Search"/>
@@ -26,7 +53,7 @@
 		<button id="expandAll">Expand All</button>
 		<button id="collapseAll">Collapse All</button>
 		<details class="linkList hidden">
-			<summary>Jump to</summary>
+			<summary></summary>
 			<a href="#linksTable">Text Links</a>
 			<a href="#stylesheet">Style Sheets</a>
 			<a href="#script">Scripts</a>
@@ -38,8 +65,9 @@
 		</details>
 	</div>
 
-	<details>
+	<details class="spacerTop">
 		<summary>Text Links (<span class="listLength"></span>)</summary>
+		<button id="toggleText" class="spacerTop">Toggle Text</button>
 		<table id="linksTable">
 			<thead>
 				<tr>

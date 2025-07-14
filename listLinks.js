@@ -3,12 +3,20 @@ var prefs = {
 	invertCheck: false,
 	ignoreCheck: false,
 	firstPartyCheck: false,
-	detailsOpen: [false, false, false, false, false, false, false, false]
+	hideText: false,
+	ignoreCollapsed: false,
+	categorySpacer: false,
+	prependTextLinks: false,
+	bookmarkFolders: '',
+	detailsOpen: []
 }
 
 //save state of links arrays for searching
 var links;
 
+function toggleTextLinks() {
+	document.getElementById('linksTable').classList.toggle('hideText');
+}
 function expandDetails(ev) {
 	//bool to open or close all details
 	const open = ev.target.id === 'expandAll';
@@ -102,20 +110,28 @@ function firstPartySearch(ev) {
 	}
 }
 
-function markSaved(ev) {
-	//mark save button green
-	document.getElementById('saveView').classList.add('saved');
+function statusMessage(message) {
+	let statusElem = document.getElementById('statusMessage');
+	statusElem.textContent = message;
+	statusElem.classList.remove('hidden');
 	
-	//clear mark class
-	window.setTimeout(function removeSaved() {
-		document.getElementById('saveView').classList.remove('saved')
-	}, 5000);
+	//after timeout hide message
+	window.setTimeout(function removeMessage() {
+		statusElem.classList.add('hidden');
+	}, 3000);
 }
+
 function saveView(ev) {
 	prefs.searchStr = document.getElementById('searchBar').value;
 	prefs.invertCheck = document.getElementById('invertSearch').checked;
 	prefs.ignoreCheck = document.getElementById('ignoreCase').checked;
 	prefs.firstPartyCheck = document.getElementById('firstPartySearch').checked;
+	prefs.hideText = document.getElementById('linksTable').classList.contains('hideText');
+
+	prefs.ignoreCollapsed = document.getElementById('ignoreCollapsed').checked;
+	prefs.categorySpacer = document.getElementById('categorySpacer').checked;
+	prefs.prependTextLinks = document.getElementById('prependTextLinks').checked;
+	prefs.bookmarkFolders = document.getElementById('bookmarkFolders').value;
 
 	let detailsElem = document.querySelectorAll('details');
 	//save whether each detail is open
@@ -123,6 +139,9 @@ function saveView(ev) {
 		prefs.detailsOpen[d] = detailsElem[d].open;
 	}
 	//save to local storage
+	function markSaved(ev) {
+		statusMessage('View saved');
+	}
 	chrome.storage.local.set(prefs).then(markSaved);
 }
 
@@ -132,6 +151,14 @@ function loadView(storage) {
 	document.getElementById('invertSearch').checked = prefs.invertCheck;
 	document.getElementById('ignoreCase').checked = prefs.ignoreCheck;
 	document.getElementById('firstPartySearch').checked = prefs.firstPartyCheck;
+	if(prefs.hideText)
+		toggleTextLinks();
+
+	document.getElementById('ignoreCollapsed').checked = prefs.ignoreCollapsed;
+	document.getElementById('categorySpacer').checked = prefs.categorySpacer;
+	document.getElementById('prependTextLinks').checked = prefs.prependTextLinks;
+	if(prefs.bookmarkFolders !== '')
+		document.getElementById('bookmarkFolders').value = prefs.bookmarkFolders;
 
 	let detailsElem = document.querySelectorAll('details');
 	//open details
@@ -140,6 +167,88 @@ function loadView(storage) {
 	}
 	//apply search from saved view after finishing setup
 	search();
+}
+
+function copyLinks() {
+	let list = searchArr();
+	let text = '';
+	for(let l of list)
+		//array can be strings or anchor elements converted automatically using toString
+		text += l + '\n';
+	navigator.clipboard.writeText(text);
+	statusMessage(list.length + ' lines copied');
+}
+
+function openPlainText() {
+	let list = searchArr();
+	if(list.length < 1) {
+		statusMessage('No links to open');
+		return;
+	}
+
+	let array = [list.join('\n')];
+	let blob = new Blob(array, {type: 'text/plain'});
+	window.open(URL.createObjectURL(blob), '_blank');
+}
+function bookmarkLinks() {
+	let foldElem = document.getElementById('bookmarkFolders');
+	let titleElem = document.getElementById('bookmarkTitle');
+	let list = searchArr(false);
+	if(list.length < 1) {
+		statusMessage('No bookmarks to save');
+		return;
+	}
+
+	//create folder using saved or selected folderId and original title
+	chrome.bookmarks.create({parentId: foldElem.value, title: titleElem.value}).then(createBookmarks);
+	
+	function createBookmarks(folder) {
+		//reverse iteration because the default adds to the beginning of folder
+		for(let l=list.length-1; l >= 0; l--) {
+			chrome.bookmarks.create({
+				url: list[l].href,
+				parentId: folder.id
+			});
+		}
+		statusMessage(list.length + ' bookmarks saved');
+	}
+}
+
+//returns currently searched links as an array of strings
+function searchArr(formatting = true) {
+	let ignoreCollapsed = document.getElementById('ignoreCollapsed').checked;
+	//formatting=false removes category labels and text from links for when saving bookmarks
+	let labelCategories = document.getElementById('categorySpacer').checked && formatting;
+	let addLinkText = document.getElementById('prependTextLinks').checked && formatting;
+
+	let list = [];
+	let textLinks = document.getElementById('linksTable').parentElement;
+	let isTextTableOpen = textLinks.hasAttribute('open');
+	//avoid adding collapsed details if option is unchecked, also if list is empty
+	if(( isTextTableOpen || ignoreCollapsed ) && !textLinks.classList.contains('emptyList')) {
+		list = [...document.querySelectorAll('#textLinks > tr:not(.hidden) a')];
+		if(addLinkText) {
+			let text = document.querySelectorAll('#textLinks > tr:not(.hidden) > td:first-child');
+			let arr = [];
+
+			for(let a in list) {
+				arr.push(text[a].textContent.trim());
+				arr.push(list[a]);
+			}
+			list = arr;
+		}
+	}
+
+	for(let id of ['stylesheet', 'script', 'image', 'audio', 'video', 'iframe', 'misc']) {
+		let elem = document.getElementById(id).parentElement;
+		//avoid adding categories using spread syntax
+		let categoryText = labelCategories ? [id + ': '] : [];
+		if(( elem.hasAttribute('open') || ignoreCollapsed ) && !elem.classList.contains('emptyList'))
+			//add category text and avoid links hidden from search
+			list = [...list, ...categoryText, ...elem.querySelectorAll('a:not(.hidden)')];
+	}
+
+	return list;
 }
 
 function setLinkCount(elem, length) {
@@ -189,6 +298,7 @@ function setup(message) {
 	url.href = message.docurl;
 
 	document.title = 'Links for: ' + message.title;
+	document.getElementById('bookmarkTitle').value = 'Link List: ' + message.title;
 
 	let linkTable = document.getElementById('textLinks');
 	setLinkCount(document.getElementById('linksTable'), message.linkRef.length);
@@ -218,14 +328,44 @@ function setup(message) {
 	appendLinks('iframe', message.iframe);
 	appendLinks('misc', message.misc);
 
-	//load saved view
-	chrome.storage.local.get(prefs, loadView);
+	//list bookmark folders
+	let foldElem = document.getElementById('bookmarkFolders');
+	chrome.bookmarks.getTree().then(recurseBookmarks).then(cleanupBookmarks);
+
+	function recurseBookmarks(tree, depth = '') {
+		for(let f of tree) {
+			//only add folders
+			if(f.url !== undefined)
+				continue;
+			let elem = document.createElement('option');
+			elem.textContent = depth + '|' + f.title;
+			elem.value = f.id;
+			foldElem.append(elem);
+
+			recurseBookmarks(f.children, depth+'-');
+		}
+	}
+	//cleanup first layer since root cannot be saved to
+	function cleanupBookmarks() {
+		foldElem.children[0].remove();
+		for(let e of foldElem.children) {
+			e.textContent = e.textContent.slice(1);
+		}
+
+		//load saved view
+		chrome.storage.local.get(prefs, loadView);
+	}
 }
 
 //request links object from background.js
 chrome.runtime.sendMessage('getLinks').then(setup);
 
+//save links controls
+document.getElementById('copyButton').addEventListener('click', copyLinks);
+document.getElementById('plainTextButton').addEventListener('click', openPlainText);
+document.getElementById('bookmarkButton').addEventListener('click', bookmarkLinks);
 //page filtering controls
+document.getElementById('toggleText').addEventListener('click', toggleTextLinks);
 document.getElementById('expandAll').addEventListener('click', expandDetails);
 document.getElementById('collapseAll').addEventListener('click', expandDetails);
 document.getElementById('saveView').addEventListener('click', saveView);

@@ -1,7 +1,8 @@
 //links objects indexed by tabid
 var linksArr = [];
+var isFox = chrome.hasOwnProperty('menus');
 //alias for which context menu api is available
-var menuApi = chrome.contextMenus || browser.menus;
+var menuApi = isFox ? browser.menus : chrome.contextMenus;
 
 function linkResponse(message, sender, responseFunc) {
 	if(message === 'getLinks') {
@@ -24,29 +25,37 @@ function setInfo(obj) {
 	});
 }
 
+function toolbarAction(tab, opt) {
+	//start content script in active tab
+	chrome.scripting.executeScript({
+		files: ['grabLinks.js'],
+		target: {tabId: tab.id}
+	}).then(setInfo, console.error);
+}
 function itemClicked(item, tab) {
 	if(item.menuItemId === 'grabLinks') {
-		//start content script in active tab
-		chrome.scripting.executeScript({
-			files: ['grabLinks.js'],
-			target: {tabId: tab.id}
-		}).then(setInfo, console.error);
+		toolbarAction(tab);
 	}
 }
 
 function start() {
+	let context = ['all'];
+	//if Firefox add tab context type
+	if(isFox)
+		context.push('tab');
+
 	//create context menus
 	menuApi.create({
 		id: 'grabLinks',
 		title: 'List all Links',
 		type: 'normal',
-		contexts: ['page']
-		//contexts: ['page', 'tab']
+		contexts: context
 	});
 }
 start();
 
 //event listeners for context menu items
+chrome.action.onClicked.addListener(toolbarAction);
 menuApi.onClicked.addListener(itemClicked);
 //listen for loaded link pages
 chrome.runtime.onMessage.addListener(linkResponse);

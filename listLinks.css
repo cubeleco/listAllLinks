@@ -7,7 +7,7 @@
 		color: black;
 		background-color: white;
 	}
-	button, input, select, textarea, table td {
+	button, input, select, textarea, table td, #statusMessage {
 		border: 2px solid #b4b4b4;
 	}
 }
@@ -17,7 +17,7 @@
 		color: white;
 		background-color: black;
 	}
-	button, input, select, textarea {
+	button, input, select, textarea, #statusMessage {
 		color: white;
 		background-color: #202020;
 		caret-color: white;
@@ -58,17 +58,18 @@ table {
 table td {
 	padding: 0 0.5em;
 }
-input[type="search"] {
-	width: 20em;
+input[type="search"], input[type="text"] {
+	width: 40em;
+	max-width: 100%;
 }
 button, label, input[type="checkbox"] {
 	cursor: pointer;
 }
-label, #Toc {
+label, #saveLinks, #Toc {
 	user-select: none;
 }
 
-summary[title] {
+[title] {
 	cursor: help;
 }
 
@@ -77,7 +78,19 @@ summary[title] {
 	top: 1em;
 }
 .category {
-	margin-bottom: 1.2em;
+	margin-bottom: 1.4em;
+}
+.spacerTop {
+	margin-top: 0.2em;
+}
+.spacer {
+	margin-bottom: 0.8em;
+}
+.listIndent {
+	margin-left: 1.2em;
+}
+.listIndent > summary {
+	margin-left: -1.2em;
 }
 .linkList {
 	margin-left: 1em;
@@ -91,6 +104,9 @@ summary[title] {
 	border-color: #040;
 }
 .hidden {
+	display: none;
+}
+.hideText td:nth-child(1) {
 	display: none;
 }
 .floatRight {
